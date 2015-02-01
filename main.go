@@ -6,18 +6,24 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/docker/swarm/scheduler/strategy/plugin"
 	"github.com/samalba/dockerclient"
 )
 
 func test(pluginType string, pluginName string, N uint32) {
-	cmd := exec.Command("swarm-" + pluginType + "-" + pluginName)
+	cmd := exec.Command("./swarm-" + pluginType + "-" + pluginName)
 	go cmd.Run()
+	time.Sleep(2 * time.Second)
 
 	// if pluginType == strategy
 	// if pluginType == discovery
 	client, err := plugin.NewClient(pluginName)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
 	r := new(int)
 	err = client.Call("Rpc.Initialize", r, r)
